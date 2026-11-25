@@ -1,0 +1,25 @@
+name: Quality checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+      - name: Verify media
+        run: |
+          test -s dist/videos/hero.mp4
+          test -s dist/videos/institucional.mp4
+          test -s dist/branding/logo.webp
+          test -s dist/index.html
